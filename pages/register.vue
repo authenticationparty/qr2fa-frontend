@@ -22,6 +22,14 @@
 					class="bg-gray-100 rounded px-4 py-1"
 					placeholder="Password"
 				/>
+				<br class="my-2" />
+				<input
+					ref="email"
+					v-model="email"
+					type="text"
+					class="bg-gray-100 rounded px-4 py-1"
+					placeholder="Email"
+				/>
 
 				<br />
 				<button
@@ -48,12 +56,21 @@ import QRCode from 'qrcode';
 import Joi from 'joi';
 
 // User schema
-const UsernameSchema = Joi
-	.string().alphanum().required().label('Username')
-	.min(4).max(64);
-const PasswordSchema = Joi
-	.string().alphanum().required().label('Password')
-	.min(6).max(128);
+const UserSchema = Joi.object({
+	username: Joi
+		.string().alphanum().required().label('Username')
+		.min(4).max(64),
+	password: Joi
+		.string().alphanum().required().label('Password')
+		.min(6).max(128),
+	email: Joi
+		.string().email({
+			tlds: {
+				allow: false,
+			}
+		}).required().label('Email')
+		.max(512),
+})
 
 export default Vue.extend({
     data() {
@@ -61,25 +78,39 @@ export default Vue.extend({
             inputComponents: true,
 			username: "",
 			password: "",
+			email: "", // Asking for email so user can reset device if lost
         };
     },
     methods: {
-        toggleQrCode() {
-			const UsernameValidation = UsernameSchema.validate(this.username);
-			if (UsernameValidation?.error) {
+        async toggleQrCode() {
+			// Check if the data is valid
+			const UserValidation = UserSchema.validate({
+				username: this.username,
+				password: this.password,
+				email: this.email,
+			});
+			if (UserValidation?.error) {
 				return this.$toast.show({
 					type: 'danger',
 					title: 'Error',
-					message: UsernameValidation.error.message,
+					message: UserValidation.error.message,
 				})
 			}
-			const PasswordValidation = PasswordSchema.validate(this.password);
-			if (PasswordValidation?.error) {
+
+			// Validate if username/email is available
+			const avCheck = await fetch(process.env.apiUrl + '/isAvailable', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(UserValidation.value),
+			}).then(_=>_.json());
+			if (!avCheck.success || !avCheck.available) {
 				return this.$toast.show({
-					type: 'danger',
-					title: 'Error',
-					message: PasswordValidation.error.message,
-				})
+							type: 'danger',
+							title: 'Error',
+							message: avCheck.message,
+						})
 			}
 
             this.inputComponents = !this.inputComponents;

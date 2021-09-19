@@ -1,7 +1,10 @@
+const PORT = 3000; // Change this to yours
+const HOST = '192.168.0.108'; // Change this to yours
+const API_PORT = 8080; // Change this to yours
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'qr2fa-client',
+    title: 'QR2FA',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -11,6 +14,16 @@ export default {
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
     ]
+  },
+  server: {
+	  port: PORT,
+	  host: HOST,
+  },
+  env: {
+	HOST,
+	PORT,
+	baseUrl: process.env.BASE_URL || `http://${HOST}:${PORT}`,
+	apiUrl: `http://${HOST}:${API_PORT}`
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
