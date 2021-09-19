@@ -3,7 +3,9 @@
 		<div
 			class="text-center border-gray-200 border-1 shadow px-8 py-4 rounded-md"
 		>
-			<h1 class="font-bold text-3xl">qr2fa</h1>
+			<div class="flex justify-center">
+				<QR2FALogo height="128" width="128" />
+			</div>
 			<p>Register</p>
 			<hr class="w-full border-gray-400 my-2" />
 			<div v-if="inputComponents">
@@ -74,7 +76,7 @@ const UserSchema = Joi.object({
 })
 
 export default Vue.extend({
-    data() {
+    data(): any {
         return {
             inputComponents: true,
 			username: "",
@@ -83,7 +85,7 @@ export default Vue.extend({
         };
     },
     methods: {
-        async toggleQrCode() {
+        async toggleQrCode(): Promise<void> {
 			// Check if the data is valid
 			const UserValidation = UserSchema.validate({
 				username: this.username,
