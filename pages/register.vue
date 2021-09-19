@@ -51,6 +51,7 @@
 </template>
 
 <script lang="ts">
+import {createHash} from 'crypto';
 import Vue from 'vue'
 import QRCode from 'qrcode';
 import Joi from 'joi';
@@ -98,7 +99,7 @@ export default Vue.extend({
 			}
 
 			// Validate if username/email is available
-			const avCheck = await fetch(process.env.apiUrl + '/isAvailable', {
+			const avCheck = await fetch(`http://${process.env.HOST}:${process.env.apiPort}/isAvailable`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -127,6 +128,20 @@ export default Vue.extend({
 						})
 					}
 				)
+
+				const socket = new WebSocket(`ws://${process.env.apiUrl}:${Number(process.env.apiPort)+1}`);
+				socket.addEventListener('open', function (_event) {
+					const hash = createHash('sha512')
+						.update(`${UserValidation.value.username}:${UserValidation.value.email}-qr2fa`)
+						.digest('hex');
+					socket.send(`hash:${hash}`)
+				});
+
+				socket.addEventListener('message', function(_event) {
+					if (_event?.data === '.registered') {
+						location.href = '/login';
+					}
+				});
 			})
         }
     }

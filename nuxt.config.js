@@ -23,7 +23,8 @@ export default {
 	HOST,
 	PORT,
 	baseUrl: process.env.BASE_URL || `http://${HOST}:${PORT}`,
-	apiUrl: `http://${HOST}:${API_PORT}`
+	apiUrl: HOST,
+	apiPort: API_PORT,
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
