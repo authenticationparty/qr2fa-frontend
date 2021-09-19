@@ -118,7 +118,7 @@ export default Vue.extend({
 				const qrElem = this.$refs.qrcode
 				QRCode.toCanvas(
 					qrElem,
-					`http://192.168.0.108:8080/register?u=${this.username}&p=${this.password}`,
+					`http://192.168.0.108:8080/register?u=${this.username}&p=${this.password}&e=${this.email}`,
 					(err) => {
 						if (err) return this.$toast.show({
 							type: 'danger',
