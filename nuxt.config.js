@@ -1,5 +1,5 @@
 const PORT = 3000; // Change this to yours
-const HOST = '192.168.0.108'; // Change this to yours
+const HOST = '192.168.0.109'; // Change this to yours
 const API_PORT = 8080; // Change this to yours
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
