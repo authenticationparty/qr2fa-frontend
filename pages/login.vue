@@ -46,6 +46,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import QRCode from 'qrcode';
+import Cookies from 'js-cookie'
 import Joi from 'joi';
 
 // User schema
@@ -84,6 +85,7 @@ export default Vue.extend({
 			const authentication = await fetch(
 					`http://${process.env.apiUrl}:${process.env.apiPort}/authenticate`,
 					{
+						method: 'POST',
 						headers: {
 							'Content-Type': 'application/json',
 						},
@@ -122,12 +124,15 @@ export default Vue.extend({
 
 				const socket = new WebSocket(`ws://${process.env.apiUrl}:${Number(process.env.apiPort)+1}`);
 				socket.addEventListener('open', function (_event) {
-					socket.send(`hash.login:${authentication.Hash}`)
+					socket.send(`hash:${authentication.Hash}`)
 				});
 
 				socket.addEventListener('message', function(_event) {
-					if (_event?.data === '.logged') {
-						location.href = '/login';
+					if (_event?.data.startsWith('.logged')) {
+						Cookies.set('qr2fa-SessId', _event?.data.replace('.logged', ''), {
+							expires: 1,
+						})
+						location.href = '/superSecretPage';
 					}
 				});
 			})
