@@ -17,7 +17,7 @@ export default {
   },
   server: {
 	  port: PORT,
-	  host: HOST,
+	  // host: HOST,
   },
   env: {
 	HOST,
